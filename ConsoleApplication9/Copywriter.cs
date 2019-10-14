@@ -18,9 +18,7 @@ namespace ConsoleApplication9
         private List<Article> artinfo = new List<Article>();
         private List<Order> ordinfo = new List<Order>();
 
-        public event PropertyChangedEventHandler PropertyChanged;
-       delegate void CopywritersChangedHandler<TKey>(object source,
- CopywritersChangedEventArgs<TKey> args);
+        public event PropertyChangedEventHandler PropertyChanged;    
 
         public string Nickname { get; set; }
         public Level Level { get; set; }
@@ -28,6 +26,7 @@ namespace ConsoleApplication9
         {
             get
             {
+                
                 return rating;
             }
             set
@@ -48,7 +47,7 @@ namespace ConsoleApplication9
             Nickname = nickname;
             Level = level;
             Rating = rating;
-
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AA"));
         }
         public Copywriter()
         {

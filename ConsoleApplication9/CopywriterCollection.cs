@@ -61,7 +61,8 @@ namespace ConsoleApplication9
             return s;
         }
         //обьявление делегата
-        public delegate void CopywriterListHandler(object source, CopywriterListHandlerEventArgs args);
+        public delegate void CopywritersChangedHandler<TKey>(object source,CopywritersChangedEventArgs<TKey> args);
+        public event CopywritersChangedHandler<TKey> CopywritersChanged;
         public string ColName { get; set; }
         Dictionary<TKey, Copywriter> dic = new Dictionary<TKey, Copywriter>();
 
@@ -90,14 +91,9 @@ namespace ConsoleApplication9
             }
             set
             {
-                CopywriterList[index] = value;
-                CopywriterReferenceChanged?.Invoke(this, new CopywriterListHandlerEventArgs(ColName,
-                                                                                    "Element Changed",
-                                                                                    value));
+                CopywriterList[index] = value;               
             }
         }
-        public event CopywriterListHandler CopywritersCountChanged;
-        public event CopywriterListHandler CopywriterReferenceChanged;
 
         }
 }
