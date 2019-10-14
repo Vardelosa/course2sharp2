@@ -72,10 +72,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Action.cs" />
     <Compile Include="Article.cs" />
     <Compile Include="Copywriter.cs" />
     <Compile Include="CopywriterCollection.cs" />
     <Compile Include="CopywriterListHandlerEventArgs.cs" />
+    <Compile Include="CopywritersChangedEventArgs.cs" />
     <Compile Include="IDateAndCopy.cs" />
     <Compile Include="Journal.cs" />
     <Compile Include="JournalEntry.cs" />

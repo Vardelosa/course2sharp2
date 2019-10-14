@@ -7,7 +7,14 @@ using System.Text;
 
 namespace ConsoleApplication9
 {
-    class CopywriterCollection : Person
+     static class ListExten
+    {
+        public static void Sort_List(this List<Copywriter> list)
+        {
+            list.Sort(new Copywriter());
+        }
+    }
+    class CopywriterCollection<TKey> : Copywriter
     {
 
         public List<Copywriter> CopywriterList = new List<Copywriter>();
@@ -18,9 +25,9 @@ namespace ConsoleApplication9
             for (int n = 0; n < defa; n++)
             {
                 CopywriterList.Add(new Copywriter());
-                CopywritersCountChanged?.Invoke(this, new CopywriterListHandlerEventArgs(ColName,
-                                                                                 "Elemest added",
-                                                                                 new Copywriter()));
+                //CopywritersCountChanged?.Invoke(this, new CopywriterListHandlerEventArgs(ColName,
+                //                                                                 "Elemest added",
+                //                                                                 new Copywriter()));
             }
         }
         
@@ -29,9 +36,9 @@ namespace ConsoleApplication9
             for (int i = 0; i < copywriters.Length; i++)
             {
                 CopywriterList.Add(copywriters[i]);
-                CopywritersCountChanged?.Invoke(this, new CopywriterListHandlerEventArgs(ColName,
-                                                                                 "Elemest added",
-                                                                                 copywriters[i]));
+                //CopywritersCountChanged?.Invoke(this, new CopywriterListHandlerEventArgs(ColName,
+                //                                                                 "Elemest added",
+                //                                                                 copywriters[i]));
             }
         }
         public override string ToString()
@@ -56,21 +63,23 @@ namespace ConsoleApplication9
         //обьявление делегата
         public delegate void CopywriterListHandler(object source, CopywriterListHandlerEventArgs args);
         public string ColName { get; set; }
-       
-        
-        public bool Remove(int n)
+        Dictionary<TKey, Copywriter> dic = new Dictionary<TKey, Copywriter>();
+
+        public bool Remove(Copywriter cw)
         {
-            if (n > CopywriterList.Count | n < 0)
+            if (!dic.ContainsValue(cw))
                 return false;
             else
             {
-                CopywriterList.RemoveAt(n);
-                CopywritersCountChanged?.Invoke(this, new CopywriterListHandlerEventArgs(ColName,
-                                                                                 "Elemest deleted",
-                                                                                 CopywriterList[n]));
+                var item = dic.First(kvp => kvp.Value == cw);
+                dic.Remove(item.Key);
+                //CopywritersCountChanged?.Invoke(this, new CopywriterListHandlerEventArgs(ColName,
+                 //                                                                "Elemest deleted",
+                   //                                                              CopywriterList[n]));
                 return true;
             }
-
+        
+            
         }
         public Copywriter this[int index]
         {

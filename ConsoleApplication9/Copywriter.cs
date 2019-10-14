@@ -1,18 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
 namespace ConsoleApplication9
 {
-    class Copywriter : Person, IDateAndCopy
+    class Copywriter : Person, IDateAndCopy,INotifyPropertyChanged, IComparable
     {
 
-
+        public int Compare(Copywriter x, Copywriter y)
+        {
+            return x.Rating.CompareTo(y.Rating);
+        }
 
         private int rating;
         private List<Article> artinfo = new List<Article>();
         private List<Order> ordinfo = new List<Order>();
+
+        public event PropertyChangedEventHandler PropertyChanged;
+       delegate void CopywritersChangedHandler<TKey>(object source,
+ CopywritersChangedEventArgs<TKey> args);
+
         public string Nickname { get; set; }
         public Level Level { get; set; }
         public int Rating
