@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.ComponentModel;
 
 
 namespace ConsoleApplication9
@@ -14,58 +14,33 @@ namespace ConsoleApplication9
             list.Sort(new Copywriter());
         }
     }
-    class CopywriterCollection<TKey> : Copywriter
+    class CopywriterCollection<TKey>  : Copywriter
     {
-
-        public List<Copywriter> CopywriterList = new List<Copywriter>();
-        
-        public void AddDefaults()
-        {
-            const int defa = 3;
-            for (int n = 0; n < defa; n++)
-            {
-                CopywriterList.Add(new Copywriter());
-                //CopywritersCountChanged?.Invoke(this, new CopywriterListHandlerEventArgs(ColName,
-                //                                                                 "Elemest added",
-                //                                                                 new Copywriter()));
-            }
-        }
-        
-        public void AddCopywriters(params Copywriter[] copywriters)
-        {
-            for (int i = 0; i < copywriters.Length; i++)
-            {
-                CopywriterList.Add(copywriters[i]);
-                //CopywritersCountChanged?.Invoke(this, new CopywriterListHandlerEventArgs(ColName,
-                //                                                                 "Elemest added",
-                //                                                                 copywriters[i]));
-            }
-        }
-        public override string ToString()
-        {
-            string s = "List:\n";
-            foreach (var c in CopywriterList)
-                s += c.ToString();
-            return s;
-        }
-        public string ToShortString()
-        {
-            string s = "";
-            foreach (var c in CopywriterList)
-            {
-                s = s + "Author: " + c.AuthorInfo + "\r\n Nickname: " + c.Nickname + "\r\n Level: " + c.Level + "\r\n Rating: " + c.Rating;
-
-                s = s + "\r\n Middle symbols in article: " + c.Middle + "\n";
-
-            }
-            return s;
-        }
-        //обьявление делегата
-        public delegate void CopywritersChangedHandler<TKey>(object source,CopywritersChangedEventArgs<TKey> args);
-        public event CopywritersChangedHandler<TKey> CopywritersChanged;
         public string ColName { get; set; }
+
+        public delegate void CopywritersChangedHandler<TKey>(object source, CopywritersChangedEventArgs<TKey> args);
+
+        public event CopywritersChangedHandler<TKey> CopywritersChanged;
+
         Dictionary<TKey, Copywriter> dic = new Dictionary<TKey, Copywriter>();
 
+        public delegate TKey KeyGenerator(Copywriter cw);
+
+        public event KeyGenerator GenerateKey;
+
+        public void Sort_ColList(List<Copywriter> list)
+        {
+            list.Sort(new Copywriter());
+        }
+        public void AddCopywriters(params Copywriter[] copywriters)
+        {
+            foreach (var cw in copywriters)
+            {
+                cw.PropertyChanged += PropertyChanged;
+                dic.Add(GenerateKey(cw), cw);
+                CopywritersChanged?.Invoke(cw, new CopywritersChangedEventArgs<TKey>(ColName, Action.Add, null, GenerateKey(cw)));
+            }
+        }
         public bool Remove(Copywriter cw)
         {
             if (!dic.ContainsValue(cw))
@@ -73,27 +48,46 @@ namespace ConsoleApplication9
             else
             {
                 var item = dic.First(kvp => kvp.Value == cw);
+                CopywritersChanged?.Invoke(cw, new CopywritersChangedEventArgs<TKey>(ColName, Action.Remove, null, GenerateKey(item.Value)));
                 dic.Remove(item.Key);
-                //CopywritersCountChanged?.Invoke(this, new CopywriterListHandlerEventArgs(ColName,
-                 //                                                                "Elemest deleted",
-                   //                                                              CopywriterList[n]));
                 return true;
             }
-        
-            
         }
-        public Copywriter this[int index]
+        public Copywriter this[TKey key]
         {
             
             get
             {
-                return CopywriterList[index];
+                return dic[key];
             }
             set
             {
-                CopywriterList[index] = value;               
+                dic[key] = value;
+                value.PropertyChanged += PropertyChanged;
             }
         }
-
+        private void PropertyChanged(object source, PropertyChangedEventArgs args)
+        {
+            CopywritersChanged?.Invoke(source, new CopywritersChangedEventArgs<TKey>(ColName, Action.Property, args.PropertyName, GenerateKey(source as Copywriter)));
         }
+        public override string ToString()
+        {
+            string s = "List:\n";
+            foreach (var c in dic)
+                s += c.Value.ToString();
+            return s;
+        }
+        public string ToShortString()
+        {
+            string s = "";
+            foreach (var c in dic)
+            {
+                s = s + "Author: " + c.Value.AuthorInfo + "\r\n Nickname: " + c.Value.Nickname + "\r\n Level: " + c.Value.Level + "\r\n Rating: " + c.Value.Rating;
+
+                s = s + "\r\n Middle symbols in article: " + c.Value.Middle + "\n";
+
+            }
+            return s;
+        }
+    }
 }

@@ -6,21 +6,27 @@ using System.Text;
 
 namespace ConsoleApplication9
 {
-    class Copywriter : Person, IDateAndCopy,INotifyPropertyChanged, IComparable
+    class Copywriter : Person, IDateAndCopy,INotifyPropertyChanged, IComparer<Person>
     {
 
-        public int Compare(Copywriter x, Copywriter y)
+        public int Compare(Copywriter x)
         {
-            return x.Rating.CompareTo(y.Rating);
+            return this.Rating.CompareTo(x.Rating);
         }
-
+        private string nickname;
         private int rating;
         private List<Article> artinfo = new List<Article>();
         private List<Order> ordinfo = new List<Order>();
-
-        public event PropertyChangedEventHandler PropertyChanged;    
-
-        public string Nickname { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+        public string Nickname 
+        { 
+            get=>nickname; 
+            set
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Nickname"));
+                nickname = value;
+            } 
+        }
         public Level Level { get; set; }
         public int Rating
         {
@@ -31,7 +37,7 @@ namespace ConsoleApplication9
             }
             set
             {
-
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Rating"));
                 if (value <= 0 | value > 5)
                 {
                     throw new ArgumentOutOfRangeException();
@@ -47,7 +53,7 @@ namespace ConsoleApplication9
             Nickname = nickname;
             Level = level;
             Rating = rating;
-            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AA"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Установлен rating и nickname в конструкторе"));
         }
         public Copywriter()
         {
@@ -57,7 +63,7 @@ namespace ConsoleApplication9
             Nickname = "Unknown";
             Level = 0;
             Rating = 1;
-
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Установлен rating и nickname в конструкторе"));
         }
         public new object DeepCopy()
         {
@@ -180,9 +186,9 @@ namespace ConsoleApplication9
             }
             return s;
         }
-        public string ToShortString()
+        public new string ToShortString()
         {
-            string s = "Author: " + AuthorInfo + "\r\n Nickname: " + Nickname;
+            string s = "\n Nickname: " + Nickname + "\nRating: "+ Rating;
             return s;
         }
 

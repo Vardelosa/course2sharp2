@@ -8,19 +8,25 @@ namespace ConsoleApplication9
     class JournalEntry
     {
         public string ColName { get; set; }
-        public string ColChanges { get; set; }
-        public string ObjInf { get; set; }
-        public JournalEntry(string cn, string cc, string oi)
+        public Action ActInfo { get; set; }
+        public string ColInfo { get; set; }
+        public string Key { get; set; }
+        public JournalEntry(string ColName, Action ActInfo, string ColInfo, string Key)
         {
-            ColName = cn;
-            ColChanges = cc;
-            ObjInf = oi;
+            this.ColName = ColName;
+            this.ActInfo = ActInfo;
+            this.ColInfo = ColInfo;
+            this.Key = Key;
         }
         public override string ToString()
         {
-            string s ="\n"+ "Collection name: " + ColName + "\n" +"Changes: " + ColChanges + "\n" + "Copywriter: \n" +ObjInf;
+            string s =$"Collection Name: {ColName}\n" +
+                   $"Info: {ActInfo}\n"+
+                   $"Key: {Key}\n";
+            if (ActInfo == Action.Property)
+                s += $"Property: {ColInfo}\n";
             return s;
         }
-      
+
     }
 }
